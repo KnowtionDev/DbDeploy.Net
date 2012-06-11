@@ -10,7 +10,7 @@ using System.Data.OracleClient;
 
 namespace Net.Sf.Dbdeploy.Database
 {
-	[Category("Oracle")]
+	[Category("Oracle"), Ignore]
 	public class OracleDatabaseSchemaVersionManagerTest : AbstractDatabaseSchemaVersionManagerTest
 	{
 		private static readonly string CONNECTION_STRING = ConfigurationManager.AppSettings["OracleConnString"];

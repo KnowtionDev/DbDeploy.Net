@@ -4,6 +4,8 @@ namespace Net.Sf.Dbdeploy.Database
 {
     public interface IDbmsSyntax
     {
+        string GenerateTrace(string format, params object[] args);
+
         string GenerateScriptHeader();
 
         string GenerateTimestamp();
@@ -23,7 +25,12 @@ namespace Net.Sf.Dbdeploy.Database
 
 	public abstract class DbmsSyntax : IDbmsSyntax
 	{
-		public abstract string GenerateScriptHeader();
+	    public virtual string GenerateTrace(string format, params object[] args)
+	    {
+	        return string.Empty;
+	    }
+
+	    public abstract string GenerateScriptHeader();
 		public abstract string GenerateTimestamp();
 		public abstract string GenerateUser();
 		public abstract string GenerateStatementDelimiter();
@@ -33,7 +40,7 @@ namespace Net.Sf.Dbdeploy.Database
 
 		public virtual string GenerateVersionCheck(string tableName, string currentVersion, string deltaSet)
 		{
-			StringBuilder builder = new StringBuilder();
+			var builder = new StringBuilder();
 			builder.AppendLine("DECLARE @currentDatabaseVersion INTEGER, @errMsg VARCHAR(1000)");
 			builder.Append("SELECT @currentDatabaseVersion = MAX(change_number) FROM ").Append(tableName).AppendLine(" WHERE delta_set = '" + deltaSet + "'");
 			builder.Append("IF (@currentDatabaseVersion <> ").Append(currentVersion).AppendLine(")");

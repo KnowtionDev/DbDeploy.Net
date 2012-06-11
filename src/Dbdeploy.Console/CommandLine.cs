@@ -16,7 +16,16 @@ namespace Net.Sf.Dbdeploy
                 DbmsFactory factory = new DbmsFactory(config.DbType, config.DbConnectionString);
                 DatabaseSchemaVersionManager databaseSchemaVersion = new DatabaseSchemaVersionManager(factory, config.DbDeltaSet, config.CurrentDbVersion, config.TableName);
 
-                new ToPrintStreamDeployer(databaseSchemaVersion, new DirectoryInfo("."), Console.Out, factory.CreateDbmsSyntax(), config.UseTransaction, null).DoDeploy(Int32.MaxValue);
+
+                var dir = new DirectoryInfo(".");
+                var syntax = factory.CreateDbmsSyntax();
+                //var output = Console.Out;
+
+                using (var output = new StreamWriter(@".\output.txt", false, System.Text.Encoding.UTF8))
+                {
+                    var deployer = new ToPrintStreamDeployer(databaseSchemaVersion, dir, output, syntax, config.UseTransaction, null);
+                    deployer.DoDeploy(Int32.MaxValue);
+                }
             }
             catch (DbDeployException ex)
             {

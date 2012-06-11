@@ -4,6 +4,12 @@ namespace Net.Sf.Dbdeploy.Database
 {
     public class MsSqlDbmsSyntax : DbmsSyntax
     {
+        public override string GenerateTrace(string format, params object[] args)
+        {
+            var trace = String.Format(format, args).Replace("'", "''");
+            return string.Format("PRINT N'{0}'", trace);
+        }
+
         public override string GenerateScriptHeader()
         {
             return string.Empty;

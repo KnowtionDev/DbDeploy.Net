@@ -19,7 +19,7 @@ namespace MSBuild.Dbdeploy.Task
 		private string deltaSet = "Main";
 		private bool useTransaction = false;
 
-		[Required]
+	    [Required]
 		public string DbType
 		{
 			set { dbType = value; }
@@ -69,26 +69,29 @@ namespace MSBuild.Dbdeploy.Task
 			set { useTransaction = value; }
 		}
 
-		public override bool Execute()
+	    public string OutputEncoding { get; set; }
+
+	    public override bool Execute()
 		{
 			bool result = false;
 			try
 			{
-				LogTaskProperties();
+				this.LogTaskProperties();
 
-			    using (TextWriter outputPrintStream = new StreamWriter(outputfile.FullName))
+			    using (TextWriter outputPrintStream = this.GetOutputStream(this.outputfile.FullName))
 				{
 					TextWriter undoOutputPrintStream = null;
-					if (undoOutputfile != null)
+					if (this.undoOutputfile != null)
 					{
-						undoOutputPrintStream = new StreamWriter(undoOutputfile.FullName);
+                        undoOutputPrintStream = this.GetOutputStream(this.undoOutputfile.FullName);
 					}
-					DbmsFactory factory = new DbmsFactory(dbType, dbConnection);
-					IDbmsSyntax dbmsSyntax = factory.CreateDbmsSyntax();
-					DatabaseSchemaVersionManager databaseSchemaVersion = new DatabaseSchemaVersionManager(factory, deltaSet, null);
 
-					ToPrintStreamDeployer toPrintSteamDeployer = new ToPrintStreamDeployer(databaseSchemaVersion, dir, outputPrintStream, dbmsSyntax, useTransaction, undoOutputPrintStream);
-					toPrintSteamDeployer.DoDeploy(lastChangeToApply);
+                    DbmsFactory factory = new DbmsFactory(this.dbType, this.dbConnection);
+					IDbmsSyntax dbmsSyntax = factory.CreateDbmsSyntax();
+					DatabaseSchemaVersionManager databaseSchemaVersion = new DatabaseSchemaVersionManager(factory, this.deltaSet, null);
+
+					ToPrintStreamDeployer toPrintSteamDeployer = new ToPrintStreamDeployer(databaseSchemaVersion, this.dir, outputPrintStream, dbmsSyntax, this.useTransaction, undoOutputPrintStream);
+					toPrintSteamDeployer.DoDeploy(this.lastChangeToApply);
 
 					if (undoOutputPrintStream != null)
 					{
@@ -99,18 +102,23 @@ namespace MSBuild.Dbdeploy.Task
 			}
 			catch (DbDeployException ex)
 			{
-				Log.LogErrorFromException(ex, true);
+				this.Log.LogErrorFromException(ex, true);
 				Console.Error.WriteLine(ex.Message);
 			}
 			catch (Exception ex)
 			{
-				Log.LogErrorFromException(ex, true);
+				this.Log.LogErrorFromException(ex, true);
 				Console.Error.WriteLine("Failed to apply changes: " + ex.Message);
 				Console.Error.WriteLine("Stack Trace:");
 				Console.Error.Write(ex.StackTrace);
 			}
 			return result;
 		}
+
+	    private StreamWriter GetOutputStream(string fullName)
+	    {
+	        return new EncodingManager(this.OutputEncoding).GetOutputStream(fullName);
+	    }
 
 	    private void LogTaskProperties()
 	    {

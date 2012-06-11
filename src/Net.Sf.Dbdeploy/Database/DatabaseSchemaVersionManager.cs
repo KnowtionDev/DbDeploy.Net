@@ -103,31 +103,42 @@ namespace Net.Sf.Dbdeploy.Database
 
         public string GenerateDoDeltaFragmentHeader(ChangeScript changeScript)
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
+            var syntax = DbmsSyntax;
 
             builder.AppendLine("--------------- Fragment begins: " + changeScript + " ---------------");
+            builder.AppendLine("SET NOCOUNT ON");
+            builder.AppendLine(syntax.GenerateTrace(">>>>>>>>>>>>>>> INICIA  DELTA: {0} >>>>>>>>>>>>>>>", changeScript));
 
-			builder.AppendLine("INSERT INTO " + TableName +
+            builder.AppendLine("INSERT INTO " + TableName +
                            " (change_number, delta_set, start_dt, applied_by, description)" +
                            " VALUES (" + changeScript.GetId() + ", '" + deltaSet + "', " +
-                           DbmsSyntax.GenerateTimestamp() +
-                           ", " + DbmsSyntax.GenerateUser() + ", '" + changeScript.GetDescription() + "')" +
-                           DbmsSyntax.GenerateStatementDelimiter());
-            builder.Append(DbmsSyntax.GenerateCommit());
+                           syntax.GenerateTimestamp() +
+                           ", " + syntax.GenerateUser() + ", '" + changeScript.GetDescription() + "')");
+            builder.AppendLine(syntax.GenerateStatementDelimiter());
+
+            builder.Append(syntax.GenerateCommit());
+            builder.AppendLine("SET NOCOUNT OFF");
             return builder.ToString();
         }
 
         public string GenerateDoDeltaFragmentFooter(ChangeScript changeScript)
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
+            var syntax = DbmsSyntax;
 
-            builder.AppendLine(DbmsSyntax.GenerateStatementDelimiter());
+            builder.AppendLine("SET NOCOUNT ON");
+            builder.AppendLine(syntax.GenerateStatementDelimiter());
 			builder.AppendLine("UPDATE " + TableName + " SET complete_dt = "
-                           + DbmsSyntax.GenerateTimestamp()
+                           + syntax.GenerateTimestamp()
                            + " WHERE change_number = " + changeScript.GetId()
                            + " AND delta_set = '" + deltaSet + "'"
-                           + DbmsSyntax.GenerateStatementDelimiter());
-            builder.AppendLine(DbmsSyntax.GenerateCommit());
+                           + syntax.GenerateStatementDelimiter());
+            builder.AppendLine(syntax.GenerateCommit());
+
+            builder.AppendLine(syntax.GenerateTrace("<<<<<<<<<<<<<<< TERMINA DELTA: {0} <<<<<<<<<<<<<<<", changeScript));
+            builder.AppendLine(syntax.GenerateTrace(""));
+            builder.AppendLine("SET NOCOUNT OFF");
             builder.Append("--------------- Fragment ends: " + changeScript + " ---------------");
             return builder.ToString();
         }

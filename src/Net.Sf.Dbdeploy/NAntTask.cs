@@ -98,7 +98,7 @@ namespace Net.Sf.Dbdeploy
 
             return currentDbVersion;
         }
-        
+
         protected override void InitializeTask(XmlNode taskNode)
         {
             Validator validator = new Validator();
@@ -107,16 +107,20 @@ namespace Net.Sf.Dbdeploy
 //            TODO: Add validation for the OutputFileEncoding
         }
 
+        private StreamWriter GetOutputStream(string fullName)
+        {
+            return new EncodingManager(this.outputFileEncoding).GetOutputStream(fullName);
+        }
+
         protected override void ExecuteTask()
         {
             try
             {
-                Encoding encoding = new OutputFileEncoding(outputFileEncoding).AsEncoding();
-                using (TextWriter outputPrintStream = new StreamWriter(outputfile.FullName, true, encoding))
+                using (TextWriter outputPrintStream = this.GetOutputStream(outputfile.FullName))
                 {
                     TextWriter undoOutputPrintStream = null;
                     if (undoOutputfile != null)
-                        undoOutputPrintStream = new StreamWriter(undoOutputfile.FullName, true, encoding);
+                        undoOutputPrintStream = this.GetOutputStream(undoOutputfile.FullName);
 
                     DbmsFactory factory = new DbmsFactory(dbType, dbConnection);
                     IDbmsSyntax dbmsSyntax = factory.CreateDbmsSyntax();
