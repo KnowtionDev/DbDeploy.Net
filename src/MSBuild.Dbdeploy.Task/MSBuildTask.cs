@@ -15,7 +15,7 @@ namespace MSBuild.Dbdeploy.Task
 		private DirectoryInfo dir;
 		private FileInfo outputfile;
 		private FileInfo undoOutputfile;
-		private int lastChangeToApply = Int32.MaxValue;
+		private long lastChangeToApply = Int64.MaxValue;
 		private string deltaSet = "Main";
 		private bool useTransaction = false;
 
@@ -51,7 +51,7 @@ namespace MSBuild.Dbdeploy.Task
 			set { undoOutputfile = new FileInfo(value); }
 		}
 
-		public int LastChangeToApply
+		public long LastChangeToApply
 		{
 			get { return lastChangeToApply; }
 			set { lastChangeToApply = value; }

@@ -32,13 +32,13 @@ namespace Net.Sf.Dbdeploy.Configuration
 			}
     	}
 
-        public int? CurrentDbVersion
+        public long? CurrentDbVersion
         {
             get
             {
                 string versionSetting = ConfigurationManager.AppSettings["db.currentversion"];
-                int version;
-                Int32.TryParse(versionSetting, out version);
+                long version;
+                Int64.TryParse(versionSetting, out version);
                 if (version == 0) return null;
                 return version;
             }

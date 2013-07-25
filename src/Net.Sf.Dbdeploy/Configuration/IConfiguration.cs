@@ -6,7 +6,7 @@ namespace Net.Sf.Dbdeploy.Configuration
         string DbType { get; }
         string DbDeltaSet { get; }
 		bool UseTransaction { get; }
-        int? CurrentDbVersion { get; }
+        long? CurrentDbVersion { get; }
 		string TableName { get; }
     }
 }

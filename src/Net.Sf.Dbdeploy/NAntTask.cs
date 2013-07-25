@@ -62,7 +62,7 @@ namespace Net.Sf.Dbdeploy
         }
 
         [TaskAttribute("lastChangeToApply")]
-        public int LastChangeToApply
+        public long LastChangeToApply
         {
             set { lastChangeToApply = value; }
         }

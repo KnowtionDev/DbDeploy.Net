@@ -24,7 +24,7 @@ namespace Net.Sf.Dbdeploy
                 using (var output = new StreamWriter(@".\output.txt", false, System.Text.Encoding.UTF8))
                 {
                     var deployer = new ToPrintStreamDeployer(databaseSchemaVersion, dir, output, syntax, config.UseTransaction, null);
-                    deployer.DoDeploy(Int32.MaxValue);
+                    deployer.DoDeploy(Int64.MaxValue);
                 }
             }
             catch (DbDeployException ex)

@@ -30,7 +30,7 @@ namespace Net.Sf.Dbdeploy
             Info("Changes currently applied to database:\n  " + prettyPrinter.Format(appliedChanges));
 
             List<ChangeScript> doChangeScripts = changeScriptRepository.GetOrderedListOfDoChangeScripts();
-            Info("Scripts available:\n  " + prettyPrinter.FormatChangeScriptList(doChangeScripts));
+            Info("Scripts available***:\n  " + prettyPrinter.FormatChangeScriptList(doChangeScripts));
 
             changeScriptExecuter.ApplyDeltaFragmentHeaderOrFooterSql(schemaManager.GenerateVersionCheck());
             List<Int64> changesToApply = LoopThruDoScripts(lastChangeToApply, doChangeScripts, appliedChanges);
@@ -44,7 +44,7 @@ namespace Net.Sf.Dbdeploy
         }
 
         private List<Int64> LoopThruDoScripts(Int64 lastChangeToApply, IEnumerable<ChangeScript> doChangeScripts, ICollection<Int64> appliedChanges)
-        {
+        {             
             List<Int64> changesToApply = new List<Int64>();
             foreach (ChangeScript changeScript in doChangeScripts)
             {
